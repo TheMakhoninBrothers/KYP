@@ -30,16 +30,16 @@ class TelegramUser(Base):
     chat_id = sql.Column(sql.Integer, unique=True, nullable=False)
     username = sql.Column(sql.VARCHAR(100))
 
-    records = relationship('Record', back_populates='owner')
-    tags = relationship('Tag', back_populates='owner')
+    records = relationship('Record', back_populates='owner', cascade='all, delete')
+    tags = relationship('Tag', back_populates='owner', cascade='all, delete')
 
 
 pivot_records_tags = sql.Table(
     'pivot_records_tags',
     Base.metadata,
     sql.Column('id', sql.Integer, primary_key=True),
-    sql.Column('record_id', sql.ForeignKey('records.id')),
-    sql.Column('tag_id', sql.ForeignKey('tags.id')),
+    sql.Column('record_id', sql.ForeignKey('records.id', ondelete='CASCADE')),
+    sql.Column('tag_id', sql.ForeignKey('tags.id', ondelete='CASCADE')),
 )
 
 
@@ -51,8 +51,14 @@ class Record(Base):
     created_at = sql.Column(sql.DateTime, default=datetime.now, nullable=False)
     owner_id = sql.Column(sql.Integer, sql.ForeignKey('telegram_users.id'))
 
-    owner = relationship('TelegramUser', back_populates='records', lazy='selectin')
-    tags = relationship('Tag', secondary=pivot_records_tags, back_populates='records', lazy='selectin')
+    owner = relationship('TelegramUser', back_populates='records', lazy='selectin', cascade='all, delete')
+    tags = relationship(
+        'Tag',
+        secondary=pivot_records_tags,
+        back_populates='records',
+        lazy='selectin',
+        cascade='all, delete',
+    )
 
 
 class Tag(Base):
@@ -63,4 +69,4 @@ class Tag(Base):
     owner_id = sql.Column(sql.Integer, sql.ForeignKey('telegram_users.id'))
 
     owner = relationship('TelegramUser', back_populates='tags')
-    records = relationship('Record', secondary=pivot_records_tags, back_populates='tags')
+    records = relationship('Record', secondary=pivot_records_tags, back_populates='tags', cascade='all, delete')
