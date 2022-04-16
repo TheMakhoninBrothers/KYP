@@ -36,22 +36,22 @@ class PostgresRecordRepo(RecordRepo):
             created_at=new_record.created_at,
         )
 
-    async def find(self, record_id: str) -> Record:
+    async def find(self, record_id: int) -> Record:
         query = select(db.Record).where(db.Record.id == record_id)
         cursor = await self.session.execute(query)
         record_from_db: typing.Optional[db.Record] = cursor.one_or_none()
         if not record_from_db:
             raise EntityNotExist()
         return Record(
-            id=record_from_db.id,
-            text=record_from_db.text,
-            tags=[Tag(id=tag.id, name=tag.name) for tag in record_from_db.tags],
+            id=record_from_db[0].id,
+            text=record_from_db[0].text,
+            tags=[Tag(id=tag.id, name=tag.name) for tag in record_from_db[0].tags],
             owner=TelegramUser(
-                id=record_from_db.owner.id,
-                telegram_id=record_from_db.owner.chat_id,
-                username=record_from_db.owner.usenrame,
+                id=record_from_db[0].owner.id,
+                telegram_id=record_from_db[0].owner.chat_id,
+                username=record_from_db[0].owner.username,
             ),
-            created_at=record_from_db.created_at,
+            created_at=record_from_db[0].created_at,
         )
 
     async def list(
