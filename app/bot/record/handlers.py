@@ -3,7 +3,7 @@ from aiogram.dispatcher.filters import Command
 
 import db.postgres as db
 from resources.record_repo.postgres import PostgresRecordRepo
-from resources.tag_parser.from_telegram import TagParserFromTelegram
+from resources.tag_parser.with_sign import TagParserWithSign
 from resources.tag_repo.postgres import PostgresTagRepo
 from resources.user_repo.postgres import PostgresTelegramUserRepo
 from use_cases.add_record_in_user_storage_from_telegram.with_tags import AddRecordInUserStorageFromTelegramWithTags
@@ -22,7 +22,7 @@ async def add_new_record(message: types.Message):
         user_repo = PostgresTelegramUserRepo(session=session)
         record_repo = PostgresRecordRepo(session=session)
         tag_repo = PostgresTagRepo(session=session)
-        tag_parser = TagParserFromTelegram()
+        tag_parser = TagParserWithSign()
         use_case = AddRecordInUserStorageFromTelegramWithTags(
             record_repo=record_repo,
             user_repo=user_repo,

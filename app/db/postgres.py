@@ -51,8 +51,8 @@ class Record(Base):
     created_at = sql.Column(sql.DateTime, default=datetime.now, nullable=False)
     owner_id = sql.Column(sql.Integer, sql.ForeignKey('telegram_users.id'))
 
-    owner = relationship('TelegramUser', back_populates='records', lazy='joined')
-    tags = relationship('Tag', secondary=pivot_records_tags, back_populates='records', lazy='joined')
+    owner = relationship('TelegramUser', back_populates='records', lazy='selectin')
+    tags = relationship('Tag', secondary=pivot_records_tags, back_populates='records', lazy='selectin')
 
 
 class Tag(Base):
