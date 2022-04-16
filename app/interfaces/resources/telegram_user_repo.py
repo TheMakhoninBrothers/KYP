@@ -11,7 +11,6 @@ class TelegramUserRepo(ABC):
     async def add(
             self,
             telegram_id: int,
-            tags: typing.List[str],
             username: typing.Optional[str],
     ) -> TelegramUser:
         """Add user from telegram."""
