@@ -14,7 +14,7 @@ class RecordRepo(ABC):
         """
 
     @abstractmethod
-    async def find(self, record_id: str) -> Record:
+    async def find(self, record_id: int) -> Record:
         """Find record by id.
         If record was not found than raise EntityNotExist.
         """
