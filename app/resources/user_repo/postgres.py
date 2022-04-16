@@ -23,8 +23,9 @@ class PostgresTelegramUserRepo(TelegramUserRepo):
         cursor = await self.session.execute(query)
         if cursor.one_or_none():
             raise EntityAlreadyExist()
-        self.session.add(db.TelegramUser(chat_id=telegram_id, username=username))
-        return TelegramUser(telegram_id=telegram_id, username=username)
+        new_user = db.TelegramUser(chat_id=telegram_id, username=username)
+        self.session.add(new_user)
+        return TelegramUser(id=new_user.id, telegram_id=telegram_id, username=username)
 
     async def find(self, telegram_id: int) -> TelegramUser:
         query = select(db.TelegramUser).where(db.TelegramUser.chat_id == telegram_id)
@@ -32,12 +33,16 @@ class PostgresTelegramUserRepo(TelegramUserRepo):
         user_from_db: typing.Optional[db.TelegramUser] = cursor.one_or_none()
         if not user_from_db:
             raise EntityNotExist()
-        return TelegramUser(telegram_id=user_from_db[0].chat_id, username=user_from_db[0].username)
+        return TelegramUser(
+            id=user_from_db[0].id,
+            telegram_id=user_from_db[0].chat_id,
+            username=user_from_db[0].username,
+        )
 
     async def list(self, limit: int = 5, offset: int = 0) -> typing.List[TelegramUser]:
         query = select(db.TelegramUser).limit(limit).offset(offset)
         cursor = await self.session.execute(query)
         return [
-            TelegramUser(telegram_id=user_from_db[0].chat_id, username=user_from_db[0].username)
+            TelegramUser(id=user_from_db[0].id, telegram_id=user_from_db[0].chat_id, username=user_from_db[0].username)
             for user_from_db in cursor.all()
         ]

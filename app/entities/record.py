@@ -9,7 +9,7 @@ from entities.user import TelegramUser
 @dataclass
 class Record:
     """Record entity"""
-    id: str
+    id: int
     text: str
     tags: typing.List[Tag]
     owner: TelegramUser

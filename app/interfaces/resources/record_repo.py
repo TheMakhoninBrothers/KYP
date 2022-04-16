@@ -8,7 +8,7 @@ class RecordRepo(ABC):
     """Interface of records repository."""
 
     @abstractmethod
-    async def add(self, telegram_id: int, tags: typing.List[str]) -> Record:
+    async def add(self, owner_id: int, text: str, tag_ids: typing.List[int]) -> Record:
         """Add record in repository.
         Tags - list of text.
         """
@@ -20,8 +20,14 @@ class RecordRepo(ABC):
         """
 
     @abstractmethod
-    async def list(self, owner: typing.Optional[int] = None, limit: int = 5, offset: int = 0) -> typing.List[Record]:
+    async def list(
+            self,
+            owner_id: typing.Optional[int] = None,
+            tag_ids: typing.Optional[typing.List[int]] = None,
+            limit: int = 5,
+            offset: int = 0,
+    ) -> typing.List[Record]:
         """Find list of records.
         Filter by:
-            - owner: chat_id in telegram.
+            - owner: id in storage.
         """

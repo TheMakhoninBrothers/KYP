@@ -1,7 +1,7 @@
 from aiogram import executor
 
 import db.postgres as db
-from bot import dp
+from bot import dp, router
 
 
 async def on_startup(_):
@@ -10,4 +10,5 @@ async def on_startup(_):
 
 
 if __name__ == '__main__':
+    router.add_handlers(dp)
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
