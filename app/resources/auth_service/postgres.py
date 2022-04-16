@@ -17,4 +17,4 @@ class PostgresTelegramAuthService(TelegramAuthService):
         cursor = await self.session.execute(select(db.TelegramUser).where(db.TelegramUser.chat_id == telegram_id))
         user: typing.Optional[db.TelegramUser] = cursor.one_or_none()
         if user:
-            return TelegramUser(telegram_id=user[0].chat_id, username=user[0].username)
+            return TelegramUser(id=user[0].id, telegram_id=user[0].chat_id, username=user[0].username)
