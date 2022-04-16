@@ -14,7 +14,7 @@ class AutoRegistrateUserInTelegram(RegistrateUserInTelegram):
         self.user_repo = user_repo
 
     async def registrate(self, telegram_id: int, username: typing.Optional[str]) -> TelegramUser:
-        auth_user = self.auth_service.auth(telegram_id)
+        auth_user = await self.auth_service.auth(telegram_id)
         if auth_user:
             return auth_user
         return await self.user_repo.add(telegram_id, username)
