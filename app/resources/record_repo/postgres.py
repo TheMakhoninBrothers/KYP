@@ -66,22 +66,25 @@ class PostgresRecordRepo(RecordRepo):
             query = query.where(db.TelegramUser.id == owner_id)
         query = query.limit(limit).offset(offset)
         cursor = await self.session.execute(query)
-        records = [
-            record_from_db for record_from_db in cursor.all()
-            if tag_ids == {tag.id for tag in record_from_db.tags}.intersection(set(tag_ids))
-        ] # TODO: Спрятать в SQL
-
+        records_from_db = cursor.all()
+        if tag_ids:
+            records = [
+                record_from_db for record_from_db in records_from_db
+                if set(tag_ids) == {tag.id for tag in record_from_db[0].tags}.intersection(set(tag_ids))
+            ]  # TODO: Спрятать в SQL
+        else:
+            records = records_from_db
         return [
             Record(
-                id=record_from_db.id,
-                text=record_from_db.text,
-                tags=[Tag(id=tag.id, name=tag.name) for tag in record_from_db.tags],
+                id=record_from_db[0].id,
+                text=record_from_db[0].text,
+                tags=[Tag(id=tag.id, name=tag.name) for tag in record_from_db[0].tags],
                 owner=TelegramUser(
-                    id=record_from_db.owner.id,
-                    telegram_id=record_from_db.owner.chat_id,
-                    username=record_from_db.owner.usenrame,
+                    id=record_from_db[0].owner.id,
+                    telegram_id=record_from_db[0].owner.chat_id,
+                    username=record_from_db[0].owner.username,
                 ),
-                created_at=record_from_db.created_at,
+                created_at=record_from_db[0].created_at,
             )
             for record_from_db in records
         ]
