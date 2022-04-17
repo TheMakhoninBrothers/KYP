@@ -1,7 +1,9 @@
+import logging
+
 from aiogram import Dispatcher, Bot
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types import ParseMode
-
+from bot.logger import logger
 import configs
 from bot import middlewares
 
@@ -16,3 +18,4 @@ dp = Dispatcher(
 )
 
 dp.middleware.setup(middlewares.UserAutoRegistration())
+dp.middleware.setup(middlewares.MongoLoggingMiddleware(logger=logger))
