@@ -6,6 +6,7 @@ load_dotenv()
 
 TOKEN = os.environ['BOT_TOKEN']
 SUPPORT_USERNAME = os.environ['SUPPORT_USERNAME']
+BOT_NAME = os.environ['BOT_NAME']
 
 POSTGRES_HOST = os.environ['POSTGRES_HOST']
 POSTGRES_PORT = int(os.environ['POSTGRES_PORT'])
