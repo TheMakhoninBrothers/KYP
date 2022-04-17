@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  bot:
+    restart: always
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: kyp_bot:0.1
+    container_name: KYP__bot
+    env_file: .env
+    volumes:
+      - ./app/:/opt/app/
+    depends_on:
+      - postgres
+      - mongo
+  postgres:
+    image: postgres:alpine3.15
+    restart: always
+    container_name: KYP__postgres
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-secret}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS:-secret}
+      POSTGRES_DB: ${POSTGRES_DBNAME:-db}
+  mongo:
+    image: mongo:5.0.6-focal
+    restart: always
+    container_name: KYP__mongo
+    env_file: .env
