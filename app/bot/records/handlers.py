@@ -27,6 +27,7 @@ def add_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(
         delete_record, Text(startswith='delete_record'),
     )
+    dp.register_inline_handler(search)
 
 
 async def record_list(message: types.Message):
@@ -132,3 +133,28 @@ async def delete_record(callback: types.CallbackQuery):
         text='<b>🗑️ Remover</b>\n'
              '<i>Запись удалена</i>',
     )
+
+
+async def search(query: types.InlineQuery):
+    async with db.session_factory() as session:
+        user_repo = PostgresTelegramUserRepo(session=session)
+        record_repo = PostgresRecordRepo(session=session)
+        tag_repo = PostgresTagRepo(session=session)
+        tag_parser = TagParserWithIgnoreSign()
+        use_case = RecordsListByTagsInSearchTextFromTelegram(
+            record_repo=record_repo,
+            user_repo=user_repo,
+            tag_repo=tag_repo,
+            tag_parser=tag_parser,
+        )
+        records = await use_case.list(query.from_user.id, query.query, 0)
+    if records:
+        result = [
+            types.InlineQueryResultArticle(
+                id=f'{i + 1}',
+                title=record.text,
+                input_message_content=types.InputMessageContent(message_text=f'{record.text}'),
+            )
+            for i, record in enumerate(records)
+        ]
+        await query.answer(result, cache_time=1, is_personal=True)
